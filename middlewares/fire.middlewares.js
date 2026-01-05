@@ -1,0 +1,48 @@
+const multer = require("multer");
+const path = require("path");
+const firebaseConfig = require("../config/firebase.config");
+
+const {getStorage,ref, uploadBytesResumable,getDownloadURL} = require("firebase/storage");
+
+const{initializeApp} = require("firebase/app");
+const app = initializeApp(firebaseConfig);
+const firebaseStorage = getStorage(app);
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {fileSize:1000000},
+    fileFilter: (req,file,cb)=> {
+        checkFileType(file,cb)
+    }
+}) .single("file");
+
+function checkFileType(file,cb){
+    const fileTypes = /jpeg|jpg|png|gif|webp/;
+    const extName = fileTypes.test(path.extname(file.originalname).toLocaleLowerCase());
+    const mimetype = fileTypes.test(file.mimetype);
+    if(mimetype && extName){
+        return cb(null,true);
+    }else{
+        cb("Error image only!!")
+    }
+}
+
+async function uploadToFirebase(req,res,next){
+    if(req.file){
+        next();
+        return;
+    }
+    const storageRef = ref(firebaseStorage,`uploads/${req.cover.originalname}`)
+
+    const metadata = {
+        contentType:req.cover.mimetype,
+    };
+    try {
+        const snapshot = await uploadBytesResumable(storageRef,req.cover.buffer,metadata);
+        req.cover.firebaseUrl = await getDownloadURL(snapshot.ref);
+        next();
+    } catch (error) {
+        res.status(500).json({message:"error.message || Something went wrong while uploading to firebase",})
+    }
+}
+module.exports = {upload, uploadToFirebase}

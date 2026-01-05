@@ -55,7 +55,10 @@ exports.login = async (req, res) => {
           .status(500)
           .send({ message: "Internal Serve Error: Authentication failed!" });
       }
-      res.send({ message: "Logged in successfully", accessToken: token });
+      res.send({ message: "Logged in successfully",
+        id: userDoc._id,
+        username: userDoc.username,
+        accessToken: token });
     });
   } catch (error) {
     res.status(500).send({

@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const core = require("cors");
+const cors = require("cors");
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 const BASE_URL = process.env.BASE_URL;
@@ -12,7 +12,7 @@ const PostRouter = require("./routers/post.router");
 const app = express();
 
 app.use(express.json());
-app.use(core({ origin: BASE_URL, methods: ["GET", "POST", "PUT", "DELETE"] }));
+app.use(cors({ origin: BASE_URL, methods: ["GET", "POST", "PUT", "DELETE"], allowedHeaders: ["Content-Type", "Authorization","x-access-token"] }));
 app.get("/", (req, res) => {
   res.send("<h1>Welcome to SE NPRU Restful API</h1>");
 });
@@ -32,8 +32,8 @@ if (!DB_URL) {
 }
 
 //use router
-app.use("/api/v1/user", UserRouter);
-app.use("/api/v1/post", PostRouter);
+app.use("/api/v1/users", UserRouter);
+app.use("/api/v1/posts", PostRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
