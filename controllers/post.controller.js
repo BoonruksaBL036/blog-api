@@ -2,7 +2,7 @@ const PostModel = require("../models/Post");
 const UserModel = require("../models/User");
 
 exports.createPost = async (req, res) => {
-  if(!req.cover){
+  if(!req.file){
     return res.status(400).json({message:"Image is required"});
   }
 
@@ -32,7 +32,7 @@ exports.createPost = async (req, res) => {
       title,
       summary,
       content,
-      cover:req.cover.firebaseURL,
+      cover:req.file.firebaseURL,
       author,
     });
 

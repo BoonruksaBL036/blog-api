@@ -32,14 +32,14 @@ async function uploadToFirebase(req,res,next){
         next();
         return;
     }
-    const storageRef = ref(firebaseStorage,`uploads/${req.cover.originalname}`)
+    const storageRef = ref(firebaseStorage,`uploads/${req.file.originalname}`)
 
     const metadata = {
-        contentType:req.cover.mimetype,
+        contentType:req.file.mimetype,
     };
     try {
-        const snapshot = await uploadBytesResumable(storageRef,req.cover.buffer,metadata);
-        req.cover.firebaseUrl = await getDownloadURL(snapshot.ref);
+        const snapshot = await uploadBytesResumable(storageRef,req.file.buffer,metadata);
+        req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
         next();
     } catch (error) {
         res.status(500).json({message:"error.message || Something went wrong while uploading to firebase",})
