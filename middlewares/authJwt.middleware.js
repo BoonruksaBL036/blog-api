@@ -7,6 +7,7 @@ const verifyToken = (req,res,next)=>{
     if(!token){
         return res.status(401).send({ message: "Token is missing" });
     }
+    //token ออกโดย sever นี
     jwt.verify(token,secret,(err, decoded)=>{
         if(err)return res.status(403).send({message:"Access Forbidden"});
         req.username = decoded.username;

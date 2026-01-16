@@ -2,17 +2,20 @@ const PostModel = require("../models/Post");
 const UserModel = require("../models/User");
 
 exports.createPost = async (req, res) => {
-  if(!req.file){
-    return res.status(400).json({message:"Image is required"});
+  if (!req.file || !req.file.supabaseUrl) {
+    return res.status(400).json({
+      message: "Cover image is required",
+    });
   }
-
-  const { title, summary, content, cover } = req.body;
+  const { title, summary, content } = req.body;
   const authorId = req.authorId;
-  if (!title || !summary || !content || !cover) {
+
+  if (!title || !summary || !content) {
     return res.status(400).send({
       message: "Please provide all fields.",
     });
   }
+
   try {
     const existedPost = await PostModel.findOne({ title });
     if (existedPost) {
@@ -32,7 +35,7 @@ exports.createPost = async (req, res) => {
       title,
       summary,
       content,
-      cover:req.file.firebaseURL,
+      cover: req.file.supabaseUrl,
       author,
     });
 
@@ -41,13 +44,13 @@ exports.createPost = async (req, res) => {
         message: "Cannot create a new post.",
       });
     }
+
     res.send({
       message: "Create post successfully.",
     });
-  } catch (error) {
+  } catch (e) {
     res.status(500).send({
-      message:
-        error.message || "Something occurred while registering a new post.",
+      message: e.message || "Something occurred while created a new post.",
     });
   }
 };
