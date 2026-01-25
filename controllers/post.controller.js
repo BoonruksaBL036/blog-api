@@ -127,8 +127,13 @@ exports.updatePost = async (req, res) => {
       message: "Post Id is missing",
     });
   }
-  const { title, summary, content, cover} = req.body;
-  if (!title || !summary || !content || !cover ) {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Request body is missing",
+    });
+  }
+  const { title, summary, content } = req.body;
+  if (!title || !summary || !content  ) {
     return res.status(400).send({
       message: "Please provide all fields",
     });
@@ -149,7 +154,7 @@ exports.updatePost = async (req, res) => {
       postDoc.title = title;
       postDoc.summary = summary;
       postDoc.content = content;
-      postDoc.cover = cover;
+      postDoc.cover = req.file && req.file.supabaseUrl ? req.file.supabaseUrl : postDoc.cover;
       await postDoc.save();
       res.send({ message: "Post update successfully" });
     }

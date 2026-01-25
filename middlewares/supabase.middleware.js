@@ -3,7 +3,7 @@ const path = require("path");
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 1000000 },
+  limits: { fileSize: 500000 },
   fileFilter: (req, file, cb) => {
     checkFileType(file, cb);
   },
